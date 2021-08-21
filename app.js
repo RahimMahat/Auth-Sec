@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
   password: String,
 });
 // Defining a test secret key for encrypting user password
-const secret = "ThisIsTheSecretKey";
+const secret = "ThisIsTheSecretKey"; // to avoid other people seeing your secret key store it as environment variable
 // attaching encrypt plugin to the userSchema with the secret key
 userSchema.plugin(encrypt, { secret: secret, encryptedFields: ["password"] });
 
