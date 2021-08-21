@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
@@ -19,9 +20,12 @@ const userSchema = new mongoose.Schema({
   password: String,
 });
 // Defining a test secret key for encrypting user password
-const secret = "ThisIsTheSecretKey"; // to avoid other people seeing your secret key store it as environment variable
+// to avoid other people seeing your secret key store it as environment variable in this case we are using npm's dotenv
 // attaching encrypt plugin to the userSchema with the secret key
-userSchema.plugin(encrypt, { secret: secret, encryptedFields: ["password"] });
+userSchema.plugin(encrypt, {
+  secret: process.env.SECRET,
+  encryptedFields: ["password"],
+});
 
 const User = new mongoose.model("User", userSchema);
 
