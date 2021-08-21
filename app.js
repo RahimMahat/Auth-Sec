@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
-const encrypt = require("mongoose-encryption");
+const md5 = require("md5");
 
 const app = express();
 
@@ -18,13 +18,6 @@ mongoose.connect("mongodb://localhost:27017/userDB", {
 const userSchema = new mongoose.Schema({
   email: String,
   password: String,
-});
-// Defining a test secret key for encrypting user password
-// to avoid other people seeing your secret key store it as environment variable in this case we are using npm's dotenv
-// attaching encrypt plugin to the userSchema with the secret key
-userSchema.plugin(encrypt, {
-  secret: process.env.SECRET,
-  encryptedFields: ["password"],
 });
 
 const User = new mongoose.model("User", userSchema);
@@ -42,11 +35,12 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+  // This time we are hashing the password instead of encrypting
   const newUser = new User({
     email: req.body.username,
-    password: req.body.password,
+    password: md5(req.body.password),
   });
-  // Mongoose encryption will automatically encrypt the data while saving it
+
   newUser.save((err) => {
     if (err) {
       console.log(err);
@@ -58,9 +52,8 @@ app.post("/register", (req, res) => {
 
 app.post("/login", (req, res) => {
   const username = req.body.username;
-  const password = req.body.password;
-  // validation code:
-  // Mongoose encryption will automatically decrypt the data while finding it
+  const password = md5(req.body.password);
+  // for the same string each time the hashed output will be same so our database can identify it
   User.findOne({ email: username }, (err, foundUser) => {
     if (err) {
       console.log(err);
