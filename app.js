@@ -56,7 +56,6 @@ app.post("/register", (req, res) => {
 app.post("/login", (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
-  // for the same string each time the hashed output will be same so our database can identify it
   User.findOne({ email: username }, (err, foundUser) => {
     if (err) {
       console.log(err);
